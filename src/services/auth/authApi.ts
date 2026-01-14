@@ -34,7 +34,7 @@ export const recoverPasswordRequest = async (email: string) => {
 };
 
 // Obtener perfil con token (GET /usuarios/perfil)
-export const getPerfilApi = async (id: string) => {
+export const getPerfilApi = async (id: number) => {
   const res = await api.get(`/usuarios/${id}`);
   return res.data;
 };
@@ -45,7 +45,7 @@ export const getUsuariosApi = async (): Promise<User[]> => {
 };
 
 // Actualizar perfil (PUT /usuarios/:id)
-export const updatePerfilApi = async (id: string, payload: Partial<User>) => {
+export const updatePerfilApi = async (id: number, payload: Partial<User>) => {
   const res = await api.put(`/usuarios/${id}`, payload);
   return res.data;
 };
