@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { registerRequest } from "../services/auth/authServices";
 import { useAuth } from "./useAuth";
-import { RegisterPayload } from "../types/user";
+import { RegisterPayload } from "../types/User";
 import { getMunicipios } from "../services/municipios/municipiosApi";
 import { getCargos } from "../services/cargo/cargoApi";
 import { getRoles } from "../services/rol/rolApi";
