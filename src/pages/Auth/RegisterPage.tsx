@@ -21,6 +21,7 @@ export default function RegisterPage() {
     updateField,
     handleSubmit,
     setCargos,
+    resetForm,
   } = useRegisterForm();
 
   const [mostrarInputCargo, setMostrarInputCargo] = useState(false);
@@ -70,8 +71,11 @@ export default function RegisterPage() {
     e.preventDefault();
     const success = await handleSubmit();
     if (success) {
+      resetForm();
+      setMostrarInputCargo(false);
+      setNuevoCargo("");
       showSuccess("Usuario creado correctamente");
-      navigate("/auth"); // Redirige al dashboard después del registro
+      navigate("/auth");
     } else {
       showError(error);
     }

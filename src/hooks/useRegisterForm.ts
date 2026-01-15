@@ -45,6 +45,21 @@ export const useRegisterForm = () => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const resetForm = () => {
+    setForm({
+      nombres: "",
+      apellidos: "",
+      email: "",
+      telefono: "",
+      cargoId: "",
+      municipioId: "",
+      rolId: "",
+      password: "",
+      repeatPassword: "",
+    });
+    setError("");
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -154,5 +169,6 @@ export const useRegisterForm = () => {
     updateField,
     handleSubmit,
     setCargos,
+    resetForm,
   };
 };
