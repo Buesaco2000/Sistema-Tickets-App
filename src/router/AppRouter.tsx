@@ -14,9 +14,9 @@ export default function AppRouter() {
       {/* Rutas públicas */}
       <Route path="/auth">
         <Route index element={<AuthPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="registro" element={<RegisterPage />} />
-        <Route path="recoverPassword" element={<RecoverPasswordPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/registro" element={<RegisterPage />} />
+        <Route path="/recoverPassword" element={<RecoverPasswordPage />} />
       </Route>
 
       {/* Rutas privadas */}
