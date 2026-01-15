@@ -1,11 +1,16 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../Components/ui/Input";
 import PasswordInput from "../../Components/ui/PasswordInput";
 import Button from "../../Components/ui/Button";
 import { useRegisterForm } from "../../hooks/useRegisterForm";
+import { useSnackbar } from "../../hooks/useSnackbar";
+import api from "../../services/api";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+
+  const { showSuccess, showError, SnackbarComponent } = useSnackbar();
 
   const {
     form,
@@ -15,13 +20,60 @@ export default function RegisterPage() {
     error,
     updateField,
     handleSubmit,
+    setCargos,
   } = useRegisterForm();
+
+  const [mostrarInputCargo, setMostrarInputCargo] = useState(false);
+  const [nuevoCargo, setNuevoCargo] = useState("");
+  const [creandoCargo, setCreandoCargo] = useState(false);
+
+  const handleCargoChange = (value: string) => {
+    if (value === "otro") {
+      setMostrarInputCargo(true);
+      updateField("cargoId", "");
+    } else {
+      setMostrarInputCargo(false);
+      updateField("cargoId", value);
+    }
+  };
+
+  const crearNuevoCargo = async () => {
+    if (!nuevoCargo.trim()) {
+      showError("Ingrese un nombre para el cargo");
+      return;
+    }
+
+    setCreandoCargo(true);
+    try {
+      const response = await api.post("/cargos", { nombre: nuevoCargo.trim() });
+      const { cargo } = response.data;
+
+      // Agregar el nuevo cargo a la lista
+      setCargos((prev) => [...prev, cargo]);
+
+      // Seleccionar el nuevo cargo
+      updateField("cargoId", cargo.id.toString());
+
+      // Ocultar el input
+      setMostrarInputCargo(false);
+      setNuevoCargo("");
+
+      showSuccess("Cargo creado correctamente");
+    } catch (err) {
+      showError("Error al crear el cargo");
+    } finally {
+      setCreandoCargo(false);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = await handleSubmit();
     if (success) {
+      showSuccess("Usuario creado correctamente");
       navigate("/auth"); // Redirige al dashboard después del registro
+    } else {
+      showError(error);
     }
   };
 
@@ -51,20 +103,53 @@ export default function RegisterPage() {
       <div className="row g-3 mt-1">
         <div className="col-6">
           <label className="form-label">Cargo</label>
-          <select
-            className="form-select"
-            value={form.cargoId}
-            onChange={(e) => updateField("cargoId", e.target.value)}
-          >
-            <option value="">Seleccione un cargo</option>
-            {cargos &&
-              Array.isArray(cargos) &&
-              cargos.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-          </select>
+          {!mostrarInputCargo ? (
+            <select
+              className="form-select"
+              value={form.cargoId}
+              onChange={(e) => handleCargoChange(e.target.value)}
+            >
+              <option value="">Seleccione un cargo</option>
+              {cargos &&
+                Array.isArray(cargos) &&
+                cargos.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              <option value="otro">Otro (Crear nuevo)</option>
+            </select>
+          ) : (
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nombre del nuevo cargo"
+                value={nuevoCargo}
+                onChange={(e) => setNuevoCargo(e.target.value)}
+                disabled={creandoCargo}
+              />
+              <button
+                type="button"
+                className="btn btn-success btn-sm"
+                onClick={crearNuevoCargo}
+                disabled={creandoCargo}
+              >
+                {creandoCargo ? "..." : "✓"}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  setMostrarInputCargo(false);
+                  setNuevoCargo("");
+                }}
+                disabled={creandoCargo}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="col-6">
@@ -126,6 +211,7 @@ export default function RegisterPage() {
       <div className="d-grid mt-4">
         <Button text="Crear cuenta" loading={loading} type="submit" />
       </div>
+      {SnackbarComponent}
     </form>
   );
 }

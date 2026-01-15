@@ -153,5 +153,6 @@ export const useRegisterForm = () => {
     error,
     updateField,
     handleSubmit,
+    setCargos,
   };
 };
